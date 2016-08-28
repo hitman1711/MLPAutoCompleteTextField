@@ -31,6 +31,11 @@
 
 + (NSString *) accessibilityLabelForIndexPath:(NSIndexPath *)indexPath;
 
+@property (assign) BOOL isNotLinedStyleTextField;
+
+@property (nonatomic, strong) UIColor		*bottomLineInactiveColor;     // default is whiteColor with alpha = 0.5
+@property (nonatomic, strong) UIColor		*bottomLineActiveColor;
+
 @property (strong, readonly) UITableView *autoCompleteTableView;
 
 // all delegates and datasources should be weak referenced

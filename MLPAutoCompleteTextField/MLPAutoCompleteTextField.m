@@ -67,6 +67,8 @@ static NSString *kDefaultAutoCompleteCellIdentifier = @"_DefaultAutoCompleteCell
 @property (assign) CGColorRef originalShadowColor;
 @property (assign) CGSize originalShadowOffset;
 @property (assign) CGFloat originalShadowOpacity;
+
+@property (nonatomic, readonly) UIView	*bottomLineView;
 @end
 
 
@@ -108,7 +110,64 @@ static NSString *kDefaultAutoCompleteCellIdentifier = @"_DefaultAutoCompleteCell
     
     UITableView *newTableView = [self newAutoCompleteTableViewForTextField:self];
     [self setAutoCompleteTableView:newTableView];
+    
+    [self setupBottomLine];
 }
+
+#pragma mark - Custom additions
+
+-(void)setupBottomLine{
+    if (_isNotLinedStyleTextField) {
+        return;
+    }
+    
+    _bottomLineView = [UIView new];
+    [self addSubview:_bottomLineView];
+    
+    self.bottomLineActiveColor = [UIColor colorWithRed:116./255. green:146./255. blue:236./255. alpha:1.];
+    self.bottomLineInactiveColor = [UIColor colorWithRed:189./255. green:189./255. blue:189./255. alpha:1.];
+    
+    self.clipsToBounds = NO;
+}
+
+- (void)updateBottomLineColor {
+    [UIView animateWithDuration:0.2
+                          delay:0.0
+                        options:UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+                         UIColor *color = self.isFirstResponder ? self.bottomLineActiveColor : self.bottomLineInactiveColor;
+                         self.bottomLineView.backgroundColor = color ?: [UIColor clearColor];
+                         [self recalcLineFrame];
+                     }
+                     completion:nil];
+    
+}
+
+- (void)recalcLineFrame {
+    CGFloat separatorHeight = self.isFirstResponder?1.5:1.; // / [UIScreen mainScreen].scale;
+    CGFloat lineWidth = self.bounds.size.width;
+    self.bottomLineView.frame = CGRectMake(0, self.bounds.size.height - separatorHeight, lineWidth, separatorHeight);
+}
+
+
+- (void)setBottomLineInactiveColor:(UIColor *)bottomLineInactiveColor {
+    _bottomLineInactiveColor = bottomLineInactiveColor;
+    [self updateBottomLineColor];
+}
+
+- (void)setBottomLineActiveColor:(UIColor *)bottomLineActiveColor {
+    _bottomLineActiveColor = bottomLineActiveColor;
+    [self updateBottomLineColor];
+}
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    [self recalcLineFrame];
+}
+
+
+#pragma mark - Custom additions end
+
 
 - (void)awakeFromNib
 {
@@ -370,6 +429,11 @@ withAutoCompleteString:(NSString *)string
 
 - (BOOL)becomeFirstResponder
 {
+    BOOL willBecome = [super becomeFirstResponder];
+    if (willBecome) {
+        [self updateBottomLineColor];
+    }
+    
     [self saveCurrentShadowProperties];
     
     if(self.showAutoCompleteTableWhenEditingBegins ||
@@ -377,7 +441,7 @@ withAutoCompleteString:(NSString *)string
         [self fetchAutoCompleteSuggestions];
     }
     
-    return [super becomeFirstResponder];
+    return willBecome;
 }
 
 - (void) finishedSearching
@@ -389,11 +453,15 @@ withAutoCompleteString:(NSString *)string
 
 - (BOOL)resignFirstResponder
 {
+    BOOL willResign = [super resignFirstResponder];
+    if (willResign) {
+        [self updateBottomLineColor];
+    }
     [self restoreOriginalShadowProperties];
     if(!self.autoCompleteTableAppearsAsKeyboardAccessory){
         [self closeAutoCompleteTableView];
     }
-    return [super resignFirstResponder];
+    return willResign;
 }
 
 

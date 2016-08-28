@@ -54,12 +54,12 @@
     //Supported Styles:
     //[self.autocompleteTextField setBorderStyle:UITextBorderStyleBezel];
     //[self.autocompleteTextField setBorderStyle:UITextBorderStyleLine];
-    //[self.autocompleteTextField setBorderStyle:UITextBorderStyleNone];
-    [self.autocompleteTextField setBorderStyle:UITextBorderStyleRoundedRect];
+    [self.autocompleteTextField setBorderStyle:UITextBorderStyleNone];
+//    [self.autocompleteTextField setBorderStyle:UITextBorderStyleRoundedRect];
     
 
-    //[self.autocompleteTextField setShowAutoCompleteTableWhenEditingBegins:YES];
-    //[self.autocompleteTextField setAutoCompleteTableBackgroundColor:[UIColor colorWithWhite:1 alpha:0.5]];
+    [self.autocompleteTextField setShowAutoCompleteTableWhenEditingBegins:YES];
+    [self.autocompleteTextField setAutoCompleteTableBackgroundColor:[UIColor colorWithWhite:1 alpha:1]];
     
     //You can use custom TableViewCell classes and nibs in the autocomplete tableview if you wish.
     //This is only supported in iOS 6.0, in iOS 5.0 you can set a custom NIB for the cell
